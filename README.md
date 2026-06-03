@@ -10,8 +10,8 @@ A lightweight, single-file web app for managing landscaping projects — track t
 - **Per-task fields** — each task row holds a task description, item/material, and cost
 - **Done tracking** — check off tasks as they're completed; a progress bar shows how many are done per project
 - **Estimated total** — costs are summed automatically per project as you type
-- **Dark mode** — toggle between light and dark themes with a single button
-- **Persistent storage** — all project data is saved to `localStorage`, so your data survives page refreshes
+- **Dark mode** — toggle between light and dark themes with a single button; preference is saved across sessions
+- **Persistent storage** — all projects and the dark mode preference are saved to `localStorage`, so your data survives page refreshes
 - **Responsive layout** — works on desktop and mobile (≤480px breakpoint)
 - **Accessible** — done checkboxes include descriptive `aria-label` attributes for screen readers
 - **Zero dependencies** — plain HTML, CSS, and vanilla JavaScript; no build step, no frameworks, no server required
@@ -69,7 +69,7 @@ Then open `http://localhost:8080/` in your browser.
 
 ## Data storage
 
-All data is stored in the browser's `localStorage` under the key `lp_projects`. No data is sent to any server. Clearing browser storage will reset the app.
+All data is stored in the browser's `localStorage` under the keys `lp_projects` and `lp_dark`. No data is sent to any server. Clearing browser storage will reset the app.
 
 ---
 
