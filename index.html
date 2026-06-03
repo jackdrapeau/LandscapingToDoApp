@@ -652,10 +652,9 @@
         </div>
         <div class="project-body">
           <div class="tasks-section">
-            <div class="task-header-row" style="grid-template-columns: 22px 1fr 130px 72px 104px 28px">
+            <div class="task-header-row" style="grid-template-columns: 22px 1fr 72px 104px 28px">
               <span></span>
-              <span>Task</span>
-              <span>Item / Material</span>
+              <span>Item / Task</span>
               <span style="text-align:right">Cost</span>
               <span>Due Date</span>
               <span></span>
@@ -664,12 +663,7 @@
               <div class="task-row" data-task-id="${t.id}">
                 <input
                   class="task-input${t.done ? ' done-task' : ''}"
-                  placeholder="Task description"
-                  value="${escHtml(t.task)}"
-                  oninput="updateTask(${p.id}, ${t.id}, 'task', this.value)"
-                >
-                <input
-                  placeholder="Item / material"
+                  placeholder="Item / task description"
                   value="${escHtml(t.item)}"
                   oninput="updateTask(${p.id}, ${t.id}, 'item', this.value)"
                 >
@@ -720,12 +714,12 @@
         cb.className = 'task-done-checkbox';
         cb.checked = task.done;
         cb.title = 'Mark done';
-        cb.setAttribute('aria-label', task.task ? `Mark "${task.task}" done` : 'Mark task done');
+        cb.setAttribute('aria-label', task.item ? `Mark "${task.item}" done` : 'Mark task done');
         cb.addEventListener('change', () => {
           updateTask(p.id, task.id, 'done', cb.checked);
         });
         row.insertBefore(cb, row.firstChild);
-        row.style.gridTemplateColumns = '22px 1fr 130px 72px 104px 28px';
+        row.style.gridTemplateColumns = '22px 1fr 72px 104px 28px';
       });
     });
 
@@ -751,7 +745,7 @@
       p.tasks.forEach(t => {
         if (t.done || !t.due) return;
         if (!tasksByDate[t.due]) tasksByDate[t.due] = [];
-        tasksByDate[t.due].push({ project: p.name || 'Unnamed Project', task: t.task || 'Unnamed Task' });
+        tasksByDate[t.due].push({ project: p.name || 'Unnamed Project', task: t.item || 'Unnamed Task' });
       });
     });
 
