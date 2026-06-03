@@ -571,7 +571,7 @@
   function addTask(projectId) {
     const p = projects.find(p => p.id === projectId);
     if (!p) return;
-    p.tasks.push({ id: Date.now(), task: '', item: '', cost: '', due: '', done: false });
+    p.tasks.push({ id: Date.now(), item: '', cost: '', due: '', done: false });
     save();
     render();
     // Focus the new task name field
@@ -811,6 +811,19 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
+
+  // ── One-time migration: copy task → item for rows created before the Task column was removed ──
+  let migrated = false;
+  projects.forEach(p => {
+    p.tasks.forEach(t => {
+      if (t.task && !t.item) {
+        t.item = t.task;
+        migrated = true;
+      }
+      delete t.task;
+    });
+  });
+  if (migrated) save();
 
   render();
   renderCalendar();
