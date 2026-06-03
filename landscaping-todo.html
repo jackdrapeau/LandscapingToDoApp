@@ -172,6 +172,10 @@
       padding-bottom: 2px;
     }
 
+    .task-header-row.task-row-with-checkbox {
+      grid-template-columns: 22px 1fr 140px 80px 28px;
+    }
+
     .task-header-row span {
       font-size: 0.7rem;
       font-weight: 700;
@@ -261,7 +265,8 @@
       .task-row {
         grid-template-columns: 1fr 100px 68px 28px;
       }
-      .task-row-with-checkbox {
+      .task-row-with-checkbox,
+      .task-header-row.task-row-with-checkbox {
         grid-template-columns: 22px 1fr 100px 68px 28px;
       }
     }
