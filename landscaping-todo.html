@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landscaping Project Manager</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f4f0;
+      color: #2d3a2d;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2e6b2e;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      color: #6b8f6b;
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .btn-primary {
+      background: #2e6b2e;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover { background: #245524; }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .project-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-header {
+      background: #2e6b2e;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .project-name-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      placeholder-color: rgba(255,255,255,0.7);
+    }
+
+    .project-name-input::placeholder { color: rgba(255,255,255,0.65); }
+
+    .btn-delete-project {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .btn-delete-project:hover { background: rgba(255,0,0,0.35); }
+
+    .project-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+    .tasks-section { display: flex; flex-direction: column; gap: 8px; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b8f6b;
+      margin-bottom: 4px;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 80px 28px;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .task-row input {
+      border: 1px solid #d4e4d4;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+      color: #2d3a2d;
+    }
+
+    .task-row input:focus { border-color: #2e6b2e; }
+
+    .task-row input.cost-input { text-align: right; }
+
+    .task-row input.done-task {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .btn-delete-task {
+      background: none;
+      border: none;
+      color: #c0c0c0;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .btn-delete-task:hover { color: #cc2222; background: #fee; }
+
+    .task-header-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 80px 28px;
+      gap: 6px;
+      padding-bottom: 2px;
+    }
+
+    .task-header-row span {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #aaa;
+      padding: 0 8px;
+    }
+
+    .btn-add-task {
+      background: none;
+      border: 1px dashed #b0ccb0;
+      color: #4a8a4a;
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s, border-color 0.15s;
+      margin-top: 4px;
+    }
+
+    .btn-add-task:hover { background: #f0f8f0; border-color: #2e6b2e; }
+
+    .project-footer {
+      border-top: 1px solid #eef4ee;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fbf8;
+    }
+
+    .total-label { font-size: 0.8rem; color: #6b8f6b; font-weight: 600; }
+
+    .total-amount {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2e6b2e;
+    }
+
+    .progress-bar-wrap {
+      height: 4px;
+      background: #e0ece0;
+      border-radius: 2px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #2e6b2e;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    .progress-label {
+      font-size: 0.72rem;
+      color: #999;
+      text-align: right;
+      margin-top: -4px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: #99b399;
+      font-size: 0.95rem;
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+    .task-done-checkbox {
+      accent-color: #2e6b2e;
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .task-row-inner {
+      display: contents;
+    }
+
+    @media (max-width: 480px) {
+      .task-row {
+        grid-template-columns: 1fr 100px 68px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Landscaping Projects</h1>
+  <p>Track projects, tasks, materials, and costs</p>
+</header>
+
+<div class="toolbar">
+  <button class="btn-primary" onclick="addProject()">+ New Project</button>
+</div>
+
+<div class="projects-grid" id="projectsGrid">
+  <div class="empty-state" id="emptyState">
+    <div class="icon">🌱</div>
+    <div>No projects yet.<br>Click <strong>+ New Project</strong> to get started.</div>
+  </div>
+</div>
+
+<script>
+  let projects = JSON.parse(localStorage.getItem('lp_projects') || '[]');
+
+  function save() {
+    localStorage.setItem('lp_projects', JSON.stringify(projects));
+  }
+
+  function addProject() {
+    projects.push({ id: Date.now(), name: '', tasks: [] });
+    save();
+    render();
+    const inputs = document.querySelectorAll('.project-name-input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function deleteProject(id) {
+    projects = projects.filter(p => p.id !== id);
+    save();
+    render();
+  }
+
+  function addTask(projectId) {
+    const p = projects.find(p => p.id === projectId);
+    if (!p) return;
+    p.tasks.push({ id: Date.now(), task: '', item: '', cost: '', done: false });
+    save();
+    render();
+    const card = document.querySelector(`[data-project-id="${projectId}"]`);
+    if (card) {
+      const taskInputs = card.querySelectorAll('.task-input');
+      if (taskInputs.length) taskInputs[taskInputs.length - 1].focus();
+    }
+  }
+
+  function deleteTask(projectId, taskId) {
+    const p = projects.find(p => p.id === projectId);
+    if (!p) return;
+    p.tasks = p.tasks.filter(t => t.id !== taskId);
+    save();
+    render();
+  }
+
+  function updateProject(id, field, value) {
+    const p = projects.find(p => p.id === id);
+    if (p) { p[field] = value; save(); }
+  }
+
+  function updateTask(projectId, taskId, field, value) {
+    const p = projects.find(p => p.id === projectId);
+    if (!p) return;
+    const t = p.tasks.find(t => t.id === taskId);
+    if (t) { t[field] = value; save(); }
+    if (field === 'done') render();
+    if (field === 'cost') updateTotal(projectId);
+  }
+
+  function updateTotal(projectId) {
+    const p = projects.find(p => p.id === projectId);
+    if (!p) return;
+    const total = p.tasks.reduce((sum, t) => sum + (parseFloat(t.cost) || 0), 0);
+    const el = document.querySelector(`[data-total="${projectId}"]`);
+    if (el) el.textContent = '$' + total.toFixed(2);
+  }
+
+  function formatCurrency(val) {
+    const n = parseFloat(val);
+    return isNaN(n) ? '' : n.toFixed(2);
+  }
+
+  function render() {
+    const grid = document.getElementById('projectsGrid');
+    const empty = document.getElementById('emptyState');
+
+    grid.querySelectorAll('.project-card').forEach(el => el.remove());
+
+    if (projects.length === 0) {
+      empty.style.display = '';
+      return;
+    }
+    empty.style.display = 'none';
+
+    projects.forEach(p => {
+      const total = p.tasks.reduce((sum, t) => sum + (parseFloat(t.cost) || 0), 0);
+      const doneCount = p.tasks.filter(t => t.done).length;
+      const pct = p.tasks.length ? Math.round((doneCount / p.tasks.length) * 100) : 0;
+
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.dataset.projectId = p.id;
+
+      card.innerHTML = `
+        <div class="project-header">
+          <input
+            class="project-name-input"
+            placeholder="Project Name"
+            value="${escHtml(p.name)}"
+            oninput="updateProject(${p.id}, 'name', this.value)"
+          >
+          <button class="btn-delete-project" title="Delete project" onclick="deleteProject(${p.id})">✕</button>
+        </div>
+        <div class="project-body">
+          <div class="tasks-section">
+            <div class="task-header-row">
+              <span>Task</span>
+              <span>Item / Material</span>
+              <span style="text-align:right">Cost</span>
+              <span></span>
+            </div>
+            ${p.tasks.map(t => `
+              <div class="task-row" data-task-id="${t.id}">
+                <input
+                  class="task-input${t.done ? ' done-task' : ''}"
+                  placeholder="Task description"
+                  value="${escHtml(t.task)}"
+                  oninput="updateTask(${p.id}, ${t.id}, 'task', this.value)"
+                >
+                <input
+                  placeholder="Item / material"
+                  value="${escHtml(t.item)}"
+                  oninput="updateTask(${p.id}, ${t.id}, 'item', this.value)"
+                >
+                <input
+                  class="cost-input"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value="${escHtml(t.cost)}"
+                  oninput="updateTask(${p.id}, ${t.id}, 'cost', this.value)"
+                >
+                <button class="btn-delete-task" title="Remove task" onclick="deleteTask(${p.id}, ${t.id})">✕</button>
+              </div>
+            `).join('')}
+            <button class="btn-add-task" onclick="addTask(${p.id})">+ Add Task</button>
+          </div>
+          ${p.tasks.length > 0 ? `
+          <div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar" style="width:${pct}%"></div>
+            </div>
+            <div class="progress-label">${doneCount} / ${p.tasks.length} tasks marked done</div>
+          </div>` : ''}
+        </div>
+        <div class="project-footer">
+          <span class="total-label">Estimated Total</span>
+          <span class="total-amount" data-total="${p.id}">$${total.toFixed(2)}</span>
+        </div>
+      `;
+
+      grid.appendChild(card);
+
+      card.querySelectorAll('.task-row').forEach((row, i) => {
+        const task = p.tasks[i];
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'task-done-checkbox';
+        cb.checked = task.done;
+        cb.title = 'Mark done';
+        cb.addEventListener('change', () => {
+          updateTask(p.id, task.id, 'done', cb.checked);
+        });
+        row.insertBefore(cb, row.firstChild);
+        row.style.gridTemplateColumns = '22px 1fr 140px 80px 28px';
+      });
+    });
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  render();
+</script>
+</body>
+</html>
