@@ -545,6 +545,7 @@
         cb.className = 'task-done-checkbox';
         cb.checked = task.done;
         cb.title = 'Mark done';
+        cb.setAttribute('aria-label', task.task ? `Mark "${task.task}" done` : 'Mark task done');
         cb.addEventListener('change', () => {
           updateTask(p.id, task.id, 'done', cb.checked);
         });
