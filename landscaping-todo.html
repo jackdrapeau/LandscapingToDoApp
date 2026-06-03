@@ -7,31 +7,100 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Light mode tokens ── */
+    :root {
+      --bg-page:        #f0f4f0;
+      --bg-card:        #ffffff;
+      --bg-footer:      #f8fbf8;
+      --bg-input:       #ffffff;
+      --color-text:     #2d3a2d;
+      --color-subtle:   #6b8f6b;
+      --color-label:    #aaa;
+      --color-accent:   #2e6b2e;
+      --color-accent-h: #245524;
+      --border-card:    #eef4ee;
+      --border-input:   #d4e4d4;
+      --border-add:     #b0ccb0;
+      --color-add-btn:  #4a8a4a;
+      --bg-add-hover:   #f0f8f0;
+      --bg-progress:    #e0ece0;
+      --color-progress: #999;
+      --color-del-task: #c0c0c0;
+      --color-done:     #999;
+      --shadow-card:    rgba(0,0,0,0.08);
+    }
+
+    /* ── Dark mode tokens ── */
+    html.dark {
+      --bg-page:        #161e16;
+      --bg-card:        #1e2a1e;
+      --bg-footer:      #192119;
+      --bg-input:       #243024;
+      --color-text:     #d4e8d4;
+      --color-subtle:   #7aaa7a;
+      --color-label:    #668866;
+      --color-accent:   #4a9e4a;
+      --color-accent-h: #3d853d;
+      --border-card:    #2a3a2a;
+      --border-input:   #3a5a3a;
+      --border-add:     #3a5a3a;
+      --color-add-btn:  #6ab86a;
+      --bg-add-hover:   #1e2e1e;
+      --bg-progress:    #2a3a2a;
+      --color-progress: #668866;
+      --color-del-task: #556655;
+      --color-done:     #557755;
+      --shadow-card:    rgba(0,0,0,0.35);
+    }
+
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f0f4f0;
-      color: #2d3a2d;
+      background: var(--bg-page);
+      color: var(--color-text);
       min-height: 100vh;
       padding: 24px 16px;
+      transition: background 0.2s, color 0.2s;
     }
 
     header {
       text-align: center;
       margin-bottom: 32px;
+      position: relative;
     }
 
     header h1 {
       font-size: 2rem;
       font-weight: 700;
-      color: #2e6b2e;
+      color: var(--color-accent);
       letter-spacing: -0.5px;
     }
 
     header p {
-      color: #6b8f6b;
+      color: var(--color-subtle);
       margin-top: 4px;
       font-size: 0.95rem;
     }
+
+    /* ── Dark mode toggle ── */
+    .dark-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-input);
+      color: var(--color-text);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .dark-toggle:hover { border-color: var(--color-accent); }
 
     .toolbar {
       display: flex;
@@ -40,7 +109,7 @@
     }
 
     .btn-primary {
-      background: #2e6b2e;
+      background: var(--color-accent);
       color: #fff;
       border: none;
       padding: 10px 22px;
@@ -51,7 +120,7 @@
       transition: background 0.15s;
     }
 
-    .btn-primary:hover { background: #245524; }
+    .btn-primary:hover { background: var(--color-accent-h); }
 
     .projects-grid {
       display: grid;
@@ -62,20 +131,22 @@
     }
 
     .project-card {
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px var(--shadow-card);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      transition: background 0.2s, box-shadow 0.2s;
     }
 
     .project-header {
-      background: #2e6b2e;
+      background: var(--color-accent);
       padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
+      transition: background 0.2s;
     }
 
     .project-name-input {
@@ -115,7 +186,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #6b8f6b;
+      color: var(--color-subtle);
       margin-bottom: 4px;
     }
 
@@ -131,29 +202,30 @@
     }
 
     .task-row input {
-      border: 1px solid #d4e4d4;
+      border: 1px solid var(--border-input);
       border-radius: 6px;
       padding: 6px 8px;
       font-size: 0.875rem;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, background 0.2s, color 0.2s;
       width: 100%;
-      color: #2d3a2d;
+      color: var(--color-text);
+      background: var(--bg-input);
     }
 
-    .task-row input:focus { border-color: #2e6b2e; }
+    .task-row input:focus { border-color: var(--color-accent); }
 
     .task-row input.cost-input { text-align: right; }
 
     .task-row input.done-task {
       text-decoration: line-through;
-      color: #999;
+      color: var(--color-done);
     }
 
     .btn-delete-task {
       background: none;
       border: none;
-      color: #c0c0c0;
+      color: var(--color-del-task);
       cursor: pointer;
       font-size: 1rem;
       padding: 0;
@@ -163,7 +235,7 @@
       transition: color 0.15s, background 0.15s;
     }
 
-    .btn-delete-task:hover { color: #cc2222; background: #fee; }
+    .btn-delete-task:hover { color: #cc2222; background: rgba(204,34,34,0.12); }
 
     .task-header-row {
       display: grid;
@@ -181,14 +253,14 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: #aaa;
+      color: var(--color-label);
       padding: 0 8px;
     }
 
     .btn-add-task {
       background: none;
-      border: 1px dashed #b0ccb0;
-      color: #4a8a4a;
+      border: 1px dashed var(--border-add);
+      color: var(--color-add-btn);
       border-radius: 6px;
       padding: 6px;
       font-size: 0.82rem;
@@ -198,28 +270,29 @@
       margin-top: 4px;
     }
 
-    .btn-add-task:hover { background: #f0f8f0; border-color: #2e6b2e; }
+    .btn-add-task:hover { background: var(--bg-add-hover); border-color: var(--color-accent); }
 
     .project-footer {
-      border-top: 1px solid #eef4ee;
+      border-top: 1px solid var(--border-card);
       padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f8fbf8;
+      background: var(--bg-footer);
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    .total-label { font-size: 0.8rem; color: #6b8f6b; font-weight: 600; }
+    .total-label { font-size: 0.8rem; color: var(--color-subtle); font-weight: 600; }
 
     .total-amount {
       font-size: 1.1rem;
       font-weight: 700;
-      color: #2e6b2e;
+      color: var(--color-accent);
     }
 
     .progress-bar-wrap {
       height: 4px;
-      background: #e0ece0;
+      background: var(--bg-progress);
       border-radius: 2px;
       margin-bottom: 8px;
       overflow: hidden;
@@ -227,14 +300,14 @@
 
     .progress-bar {
       height: 100%;
-      background: #2e6b2e;
+      background: var(--color-accent);
       border-radius: 2px;
       transition: width 0.3s;
     }
 
     .progress-label {
       font-size: 0.72rem;
-      color: #999;
+      color: var(--color-progress);
       text-align: right;
       margin-top: -4px;
       margin-bottom: 8px;
@@ -243,14 +316,14 @@
     .empty-state {
       text-align: center;
       padding: 48px 16px;
-      color: #99b399;
+      color: var(--color-subtle);
       font-size: 0.95rem;
     }
 
     .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 
     .task-done-checkbox {
-      accent-color: #2e6b2e;
+      accent-color: var(--color-accent);
       width: 15px;
       height: 15px;
       cursor: pointer;
@@ -275,6 +348,7 @@
 <body>
 
 <header>
+  <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙 Dark</button>
   <h1>🌿 Landscaping Projects</h1>
   <p>Track projects, tasks, materials, and costs</p>
 </header>
@@ -291,6 +365,23 @@
 </div>
 
 <script>
+  // ── Dark mode ──
+  const darkToggle = document.getElementById('darkToggle');
+
+  function applyDark(on) {
+    document.documentElement.classList.toggle('dark', on);
+    darkToggle.textContent = on ? '☀️ Light' : '🌙 Dark';
+  }
+
+  function toggleDark() {
+    const on = !document.documentElement.classList.contains('dark');
+    localStorage.setItem('lp_dark', on ? '1' : '0');
+    applyDark(on);
+  }
+
+  applyDark(localStorage.getItem('lp_dark') === '1');
+
+  // ── Projects ──
   let projects = JSON.parse(localStorage.getItem('lp_projects') || '[]');
 
   function save() {
@@ -454,6 +545,7 @@
         cb.className = 'task-done-checkbox';
         cb.checked = task.done;
         cb.title = 'Mark done';
+        cb.setAttribute('aria-label', task.task ? `Mark "${task.task}" done` : 'Mark task done');
         cb.addEventListener('change', () => {
           updateTask(p.id, task.id, 'done', cb.checked);
         });
