@@ -549,7 +549,13 @@
   // ── Projects ──
   let projects = (() => {
     try {
-      return JSON.parse(localStorage.getItem('lp_projects') || '[]');
+      const parsed = JSON.parse(localStorage.getItem('lp_projects') || '[]');
+      if (!Array.isArray(parsed)) {
+        console.error('lp_projects is not an array, resetting:', parsed);
+        localStorage.removeItem('lp_projects');
+        return [];
+      }
+      return parsed;
     } catch (e) {
       console.error('lp_projects corrupted, resetting:', e);
       localStorage.removeItem('lp_projects');
