@@ -343,6 +343,155 @@
         grid-template-columns: 22px 1fr 100px 68px 28px;
       }
     }
+
+    /* ── Calendar ── */
+    .calendar-section {
+      max-width: 1200px;
+      margin: 40px auto 0;
+    }
+
+    .calendar-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      margin-bottom: 16px;
+    }
+
+    .calendar-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow-card);
+      overflow: hidden;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .calendar-header {
+      background: var(--color-accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      transition: background 0.2s;
+    }
+
+    .calendar-header h2 { font-size: 1rem; font-weight: 700; }
+
+    .cal-nav {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.15s;
+    }
+
+    .cal-nav:hover { background: rgba(255,255,255,0.35); }
+
+    .calendar-dow {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: var(--bg-progress);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .calendar-dow span {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-subtle);
+      padding: 8px 0;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-left: 1px solid var(--border-card);
+      border-top: 1px solid var(--border-card);
+    }
+
+    .cal-day {
+      min-height: 90px;
+      border-right: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-card);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      background: var(--bg-card);
+      transition: background 0.2s;
+    }
+
+    .cal-day.other-month { background: var(--bg-footer); }
+
+    .cal-day-num {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-subtle);
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2px;
+    }
+
+    .cal-day.today .cal-day-num {
+      background: var(--color-accent);
+      color: #fff;
+      border-radius: 50%;
+    }
+
+    .cal-day.other-month .cal-day-num { color: var(--color-label); }
+
+    .cal-chip {
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: var(--bg-progress);
+      color: var(--color-accent);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 3px;
+      padding: 2px 5px;
+      line-height: 1.3;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: default;
+    }
+
+    .cal-chip:hover { background: var(--border-input); }
+
+    .chip-project {
+      color: var(--color-subtle);
+      font-weight: 400;
+      display: block;
+      font-size: 0.62rem;
+    }
+
+    /* Due date input in task rows */
+    .task-due-input {
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      padding: 5px 6px;
+      font-size: 0.78rem;
+      outline: none;
+      transition: border-color 0.15s, background 0.2s, color 0.2s;
+      width: 100%;
+      color: var(--color-text);
+      background: var(--bg-input);
+    }
+
+    .task-due-input:focus { border-color: var(--color-accent); }
+
+    @media (max-width: 480px) {
+      .cal-day { min-height: 60px; }
+      .chip-project { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -361,6 +510,22 @@
   <div class="empty-state" id="emptyState">
     <div class="icon">🌱</div>
     <div>No projects yet.<br>Click <strong>+ New Project</strong> to get started.</div>
+  </div>
+</div>
+
+<div class="calendar-section">
+  <div class="calendar-section-title">📅 Project &amp; Task Calendar</div>
+  <div class="calendar-card">
+    <div class="calendar-header">
+      <button class="cal-nav" id="calPrev" aria-label="Previous month">&#8249;</button>
+      <h2 id="calTitle"></h2>
+      <button class="cal-nav" id="calNext" aria-label="Next month">&#8250;</button>
+    </div>
+    <div class="calendar-dow">
+      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+      <span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
   </div>
 </div>
 
@@ -406,7 +571,7 @@
   function addTask(projectId) {
     const p = projects.find(p => p.id === projectId);
     if (!p) return;
-    p.tasks.push({ id: Date.now(), task: '', item: '', cost: '', done: false });
+    p.tasks.push({ id: Date.now(), task: '', item: '', cost: '', due: '', done: false });
     save();
     render();
     // Focus the new task name field
@@ -437,6 +602,7 @@
     if (t) { t[field] = value; save(); }
     if (field === 'done') render(); // re-render to update strikethrough + progress
     if (field === 'cost') updateTotal(projectId);
+    if (field === 'due') renderCalendar();
   }
 
   function updateTotal(projectId) {
@@ -486,11 +652,12 @@
         </div>
         <div class="project-body">
           <div class="tasks-section">
-            <div class="task-header-row task-row-with-checkbox">
+            <div class="task-header-row" style="grid-template-columns: 22px 1fr 130px 72px 104px 28px">
               <span></span>
               <span>Task</span>
               <span>Item / Material</span>
               <span style="text-align:right">Cost</span>
+              <span>Due Date</span>
               <span></span>
             </div>
             ${p.tasks.map(t => `
@@ -514,6 +681,14 @@
                   placeholder="0.00"
                   value="${escHtml(t.cost)}"
                   oninput="updateTask(${p.id}, ${t.id}, 'cost', this.value)"
+                >
+                <input
+                  class="task-due-input"
+                  type="date"
+                  value="${escHtml(t.due || '')}"
+                  title="Due date"
+                  aria-label="Due date"
+                  oninput="updateTask(${p.id}, ${t.id}, 'due', this.value)"
                 >
                 <button class="btn-delete-task" title="Remove task" onclick="deleteTask(${p.id}, ${t.id})">✕</button>
               </div>
@@ -550,10 +725,90 @@
           updateTask(p.id, task.id, 'done', cb.checked);
         });
         row.insertBefore(cb, row.firstChild);
-        row.classList.add('task-row-with-checkbox');
+        row.style.gridTemplateColumns = '22px 1fr 130px 72px 104px 28px';
       });
     });
+
+    renderCalendar();
   }
+
+  // ── Calendar ──
+  const today = new Date();
+  let calYear  = today.getFullYear();
+  let calMonth = today.getMonth();
+
+  function renderCalendar() {
+    const grid  = document.getElementById('calendarGrid');
+    const title = document.getElementById('calTitle');
+    if (!grid || !title) return;
+
+    const monthNames = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+    title.textContent = `${monthNames[calMonth]} ${calYear}`;
+
+    const tasksByDate = {};
+    projects.forEach(p => {
+      p.tasks.forEach(t => {
+        if (t.done || !t.due) return;
+        if (!tasksByDate[t.due]) tasksByDate[t.due] = [];
+        tasksByDate[t.due].push({ project: p.name || 'Unnamed Project', task: t.task || 'Unnamed Task' });
+      });
+    });
+
+    const firstDay    = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+    const todayStr    = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+    grid.innerHTML = '';
+    let cellCount = 0;
+
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const d = daysInPrev - i;
+      const m = calMonth === 0 ? 12 : calMonth;
+      const y = calMonth === 0 ? calYear - 1 : calYear;
+      appendDay(grid, d, `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`, true, todayStr, tasksByDate);
+      cellCount++;
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      appendDay(grid, d, dateStr, false, todayStr, tasksByDate);
+      cellCount++;
+    }
+    const trailing = cellCount % 7 === 0 ? 0 : 7 - (cellCount % 7);
+    for (let d = 1; d <= trailing; d++) {
+      const m = calMonth === 11 ? 1 : calMonth + 2;
+      const y = calMonth === 11 ? calYear + 1 : calYear;
+      appendDay(grid, d, `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`, true, todayStr, tasksByDate);
+    }
+  }
+
+  function appendDay(grid, dayNum, dateStr, otherMonth, todayStr, tasksByDate) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (otherMonth ? ' other-month' : '') + (dateStr === todayStr ? ' today' : '');
+    const numEl = document.createElement('div');
+    numEl.className = 'cal-day-num';
+    numEl.textContent = dayNum;
+    cell.appendChild(numEl);
+    (tasksByDate[dateStr] || []).forEach(item => {
+      const chip = document.createElement('div');
+      chip.className = 'cal-chip';
+      chip.title = `${item.project}: ${item.task}`;
+      chip.innerHTML = `${escHtml(item.task)}<span class="chip-project">${escHtml(item.project)}</span>`;
+      cell.appendChild(chip);
+    });
+    grid.appendChild(cell);
+  }
+
+  document.getElementById('calPrev').addEventListener('click', () => {
+    if (--calMonth < 0) { calMonth = 11; calYear--; }
+    renderCalendar();
+  });
+
+  document.getElementById('calNext').addEventListener('click', () => {
+    if (++calMonth > 11) { calMonth = 0; calYear++; }
+    renderCalendar();
+  });
 
   function escHtml(str) {
     return String(str)
@@ -564,6 +819,7 @@
   }
 
   render();
+  renderCalendar();
 </script>
 </body>
 </html>
