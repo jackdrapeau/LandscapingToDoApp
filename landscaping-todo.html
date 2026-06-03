@@ -86,7 +86,6 @@
       color: #fff;
       font-size: 1.05rem;
       font-weight: 600;
-      placeholder-color: rgba(255,255,255,0.7);
     }
 
     .project-name-input::placeholder { color: rgba(255,255,255,0.65); }
@@ -125,6 +124,10 @@
       grid-template-columns: 1fr 140px 80px 28px;
       gap: 6px;
       align-items: center;
+    }
+
+    .task-row-with-checkbox {
+      grid-template-columns: 22px 1fr 140px 80px 28px;
     }
 
     .task-row input {
@@ -258,6 +261,9 @@
       .task-row {
         grid-template-columns: 1fr 100px 68px 28px;
       }
+      .task-row-with-checkbox {
+        grid-template-columns: 22px 1fr 100px 68px 28px;
+      }
     }
   </style>
 </head>
@@ -290,6 +296,7 @@
     projects.push({ id: Date.now(), name: '', tasks: [] });
     save();
     render();
+    // Focus the new project's name field
     const inputs = document.querySelectorAll('.project-name-input');
     if (inputs.length) inputs[inputs.length - 1].focus();
   }
@@ -306,6 +313,7 @@
     p.tasks.push({ id: Date.now(), task: '', item: '', cost: '', done: false });
     save();
     render();
+    // Focus the new task name field
     const card = document.querySelector(`[data-project-id="${projectId}"]`);
     if (card) {
       const taskInputs = card.querySelectorAll('.task-input');
@@ -331,7 +339,7 @@
     if (!p) return;
     const t = p.tasks.find(t => t.id === taskId);
     if (t) { t[field] = value; save(); }
-    if (field === 'done') render();
+    if (field === 'done') render(); // re-render to update strikethrough + progress
     if (field === 'cost') updateTotal(projectId);
   }
 
@@ -352,6 +360,7 @@
     const grid = document.getElementById('projectsGrid');
     const empty = document.getElementById('emptyState');
 
+    // Remove old cards (keep emptyState)
     grid.querySelectorAll('.project-card').forEach(el => el.remove());
 
     if (projects.length === 0) {
@@ -381,7 +390,8 @@
         </div>
         <div class="project-body">
           <div class="tasks-section">
-            <div class="task-header-row">
+            <div class="task-header-row task-row-with-checkbox">
+              <span></span>
               <span>Task</span>
               <span>Item / Material</span>
               <span style="text-align:right">Cost</span>
@@ -428,8 +438,10 @@
         </div>
       `;
 
+      // Wire up done checkboxes after HTML is set (we'll add them differently)
       grid.appendChild(card);
 
+      // Add done-toggle via checkbox injected before each task input
       card.querySelectorAll('.task-row').forEach((row, i) => {
         const task = p.tasks[i];
         const cb = document.createElement('input');
@@ -441,7 +453,7 @@
           updateTask(p.id, task.id, 'done', cb.checked);
         });
         row.insertBefore(cb, row.firstChild);
-        row.style.gridTemplateColumns = '22px 1fr 140px 80px 28px';
+        row.classList.add('task-row-with-checkbox');
       });
     });
   }
