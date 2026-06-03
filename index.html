@@ -577,6 +577,9 @@
   }
 
   function deleteProject(id) {
+    const p = projects.find(p => p.id === id);
+    const label = p && p.name.trim() ? `"${p.name.trim()}"` : 'this project';
+    if (!confirm(`Delete ${label} and all its tasks? This cannot be undone.`)) return;
     projects = projects.filter(p => p.id !== id);
     save();
     render();
@@ -630,6 +633,13 @@
   function formatCurrency(val) {
     const n = parseFloat(val);
     return isNaN(n) ? '' : n.toFixed(2);
+  }
+
+  function formatCostOnBlur(projectId, taskId, input) {
+    const formatted = formatCurrency(input.value);
+    if (formatted === input.value) return;
+    input.value = formatted;
+    updateTask(projectId, taskId, 'cost', formatted);
   }
 
   function render() {
@@ -689,6 +699,7 @@
                   placeholder="0.00"
                   value="${escHtml(t.cost)}"
                   oninput="updateTask(${p.id}, ${t.id}, 'cost', this.value)"
+                  onblur="formatCostOnBlur(${p.id}, ${t.id}, this)"
                 >
                 <input
                   class="task-due-input"
