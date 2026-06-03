@@ -25,7 +25,7 @@ Because the app is a single HTML file with no server-side code, you can open it 
 ### Option 1 — Open the file directly
 
 1. Download or clone this repository
-2. Double-click `landscaping-todo.html`, or drag it into a browser window
+2. Double-click `index.html`, or drag it into a browser window
 
 That's it. The app runs entirely in the browser.
 
@@ -41,14 +41,14 @@ python3 -m http.server 8080
 npx serve .
 ```
 
-Then open `http://localhost:8080/landscaping-todo.html` in your browser.
+Then open `http://localhost:8080/` in your browser.
 
 ### Option 3 — GitHub Pages
 
 1. Fork or push the repo to GitHub
 2. Go to **Settings → Pages**
 3. Set the source to the `main` branch, root folder
-4. GitHub will publish the app at `https://<your-username>.github.io/<repo-name>/landscaping-todo.html`
+4. GitHub will publish the app at `https://<your-username>.github.io/<repo-name>/` (`index.html` is served automatically as the site root)
 
 ---
 
