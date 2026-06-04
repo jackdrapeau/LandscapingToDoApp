@@ -578,7 +578,8 @@
 
   function deleteProject(id) {
     const p = projects.find(p => p.id === id);
-    const label = p && p.name.trim() ? `"${p.name.trim()}"` : 'this project';
+    const safeName = (typeof p?.name === 'string' ? p.name : '').trim();
+    const label = safeName ? `"${safeName}"` : 'this project';
     if (!confirm(`Delete ${label} and all its tasks? This cannot be undone.`)) return;
     projects = projects.filter(p => p.id !== id);
     save();
